@@ -1,4 +1,4 @@
-RED='\033[0;31m'
+GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 DIR="zerotoasic" # Set as desired
 USER_HOME=$(eval echo ~$SUDO_USER)
@@ -11,7 +11,7 @@ mkdir -p "$USER_HOME/$DIR"
 
 # ==========================================================
 # Basics components
-echo "${RED}Basics components setup${NC}\n\n"
+echo "${GREEN}Basics components setup${NC}\n\n"
 
 ## Git
 if ! command -v git &> /dev/null
@@ -27,14 +27,14 @@ apt install --assume-yes python3-venv python3-pip
 ## Check local/bin in PATH
 if echo $PATH | grep '/.local';
 then
-	echo "PATH OK!"
+	echo "${GREEN}PATH OK!${NC}"
 else
 	export PATH="$HOME/.local/bon:$PATH"
 fi
 
 # ==========================================================
 # VLSI Tools
-echo "${RED}VLSI tools setup${NC}\n\n"
+echo "${GREEN}VLSI tools setup${NC}\n\n"
 
 ### Go to installation dir
 cd "$USER_HOME/$DIR" || exit 1
@@ -92,15 +92,15 @@ echo "# Variables for Zero2ASIC components" >> $USER_HOME/.bashrc
 echo "install_dir=~/$DIR/caravel" >> $USER_HOME/.bashrc
 echo "caravel_dir_name=caravel_user_project" >> $USER_HOME/.bashrc
 
-echo "export PDK_ROOT=$install_dir/pdk" >> $USER_HOME/.bashrc
-echo "export OPENLANE_ROOT=$install_dir/openlane" >> $USER_HOME/.bashrc
-echo "export PDK=sky130A" >> $USER_HOME/.bashrc
-echo "export MGMT_AREA_ROOT=$install_dir/$caravel_dir_name/mgmt_core_wrapper" >> $USER_HOME/.bashrc
-echo "export DESIGNS=$install_dir/$caravel_dir_name" >> $USER_HOME/.bashrc
-echo "export TARGET_PATH=$DESIGNS" >> $USER_HOME/.bashrc
-echo "export CARAVEL_ROOT=$DESIGNS/caravel" >> $USER_HOME/.bashrc
-echo "export MCW_ROOT=$DESIGNS/mgmt_core_wrapper" >> $USER_HOME/.bashrc
-echo "export CORE_VERILOG_PATH=$MCW_ROOT/verilog" >> $USER_HOME/.bashrc
+echo 'export PDK_ROOT=$install_dir/pdk' >> $USER_HOME/.bashrc
+echo 'export OPENLANE_ROOT=$install_dir/openlane' >> $USER_HOME/.bashrc
+echo 'export PDK=sky130A' >> $USER_HOME/.bashrc
+echo 'export MGMT_AREA_ROOT=$install_dir/$caravel_dir_name/mgmt_core_wrapper' >> $USER_HOME/.bashrc
+echo 'export DESIGNS=$install_dir/$caravel_dir_name' >> $USER_HOME/.bashrc
+echo 'export TARGET_PATH=$DESIGNS' >> $USER_HOME/.bashrc
+echo 'export CARAVEL_ROOT=$DESIGNS/caravel' >> $USER_HOME/.bashrc
+echo 'export MCW_ROOT=$DESIGNS/mgmt_core_wrapper' >> $USER_HOME/.bashrc
+echo 'export CORE_VERILOG_PATH=$MCW_ROOT/verilog' >> $USER_HOME/.bashrc
 
 ## Install NgSpice
 echo "Installing NG Spice..."
@@ -109,7 +109,7 @@ apt install --assume-yes ngspice
 # ==========================================================
 # Install Digital Design Tools
 
-echo "${RED}Digital Design tools setup${NC}\n\n"
+echo "${GREEN}Digital Design tools setup${NC}\n\n"
 
 ## Install OSS CAD
 echo "Installing OSS CAD..."
@@ -120,7 +120,7 @@ cd $USER_HOME/$DIR/caravel || exit 1
 
 tar -xzf $USER_HOME/Downloads/osscadsuite.tgz
 
-echo "export PATH=$PATH:$install_dir/oss-cad-suite/bin" >> $USER_HOME/.bashrc
+echo 'export PATH=$PATH:$install_dir/oss-cad-suite/bin' >> $USER_HOME/.bashrc
 
 ## Install CocoTB
 echo "Installing CocoTB..."
@@ -135,9 +135,11 @@ cd $USER_HOME/$DIR/caravel || exit 1
 mkdir -p riscv64
 cd riscv64 || exit 1
 
+tar -xzf $USER_HOME/Downloads/riscv.tar.gz
+
 ### Add PATH exports for RISCV
 echo "export GCC_PATH=$USER_HOME/$DIR/caravel/riscv64/bin/" >> $USER_HOME/.bashrc
-echo "export PATH=$PATH:$GCC_PATH" >> $USER_HOME/.bashrc
+echo 'export PATH=$PATH:$GCC_PATH' >> $USER_HOME/.bashrc
 echo "export GCC_PREFIX=riscv64-unknown-elf" >> $USER_HOME/.bashrc
 
 
@@ -152,5 +154,13 @@ cd openlane_summary || exit 1
 
 git checkout mpw8
 
-echo "export PATH=$PATH:$USER_HOME/$DIR/caravel/openlane_summary/" >> $USER_HOME/.bashrc
+echo 'export PATH=$PATH:$install_dir/openlane_summary/' >> $USER_HOME/.bashrc
 
+# ==========================================================
+# Removing downloaded files
+echo "Almost done, lets free some space"
+
+rm $USER_HOME/Downloads/osscadsuite.tgz
+rm $USER_HOME/Downloads/riscv.tar.gz
+
+echo "${GREEN}Installation complete!, do not forget to install KLayout and test your installation${NC}\n\n"
