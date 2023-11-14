@@ -22,14 +22,14 @@ fi
 
 ## Python
 echo "Installing python..."
-apt install --assume-yes python3-venv python3-pip
+apt install --assume-yes python3-pip
 
 ## Check local/bin in PATH
 if echo $PATH | grep '/.local';
 then
 	echo "${GREEN}PATH OK!${NC}"
 else
-	export PATH="$HOME/.local/bon:$PATH"
+	export PATH="$HOME/.local/bin:$PATH"
 fi
 
 # ==========================================================
@@ -47,7 +47,7 @@ git clone git://opencircuitdesign.com/magic
 
 cd magic || exit 1
 
-git checkout 8.3.331
+git checkout 8.3.413
 
 ./configure
 
@@ -63,6 +63,10 @@ echo "Installing Docker..."
 
 apt install --assume-yes docker.io
 
+# Add your user to docker group so sudo is not required to run docker, YOU NEED to reboot your system!!!!
+sudo groupadd docker
+sudo usermod -aG docker $USER
+
 ## Caravel
 ### Create a directory for Caravel
 mkdir "$USER_HOME/$DIR/caravel"
@@ -75,13 +79,14 @@ export OPENLANE_ROOT=${pwd}/openlane
 
 cd caravel_user_project || exit 1
 
-git checkout mpw-8c
+git checkout b8efc55a816c11c27d0c363014c5213573b325c2
 
 make setup
 
-# PDK installed is wrong, so fix that
-pip3 install volare
-volare enable --pdk sky130 3af133706e554a740cfe60f21e773d9eaa41838c
+rm -rf caravel # wrong version
+git clone https://github.com/efabless/caravel-lite caravel
+cd caravel
+git checkout f7a4b5655bf857f157491e55202ac7619dec1831
 
 ### Back to installation dir
 cd $USER_HOME/$DIR || exit 1
@@ -114,18 +119,13 @@ echo "${GREEN}Digital Design tools setup${NC}\n\n"
 ## Install OSS CAD
 echo "Installing OSS CAD..."
 
-curl -L -o $USER_HOME/Downloads/osscadsuite.tgz https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2022-09-03/oss-cad-suite-linux-x64-20220903.tgz
+curl -L -o $USER_HOME/Downloads/osscadsuite.tgz https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-09-28/oss-cad-suite-linux-x64-20230928.tgz
 
 cd $USER_HOME/$DIR/caravel || exit 1
 
 tar -xzf $USER_HOME/Downloads/osscadsuite.tgz
 
 echo 'export PATH=$PATH:$install_dir/oss-cad-suite/bin' >> $USER_HOME/.bashrc
-
-## Install CocoTB
-echo "Installing CocoTB..."
-
-pip3 install cocotb==1.7.2
 
 ## Install RISCV
 echo "Installing RISCV Toolchain..."
@@ -144,7 +144,7 @@ echo "export GCC_PREFIX=riscv64-unknown-elf" >> $USER_HOME/.bashrc
 
 
 ## Install OpenLane
-echo "Installing OpenLane..."
+echo "Installing OpenLane summary tool..."
 
 cd $USER_HOME/$DIR/caravel
 
@@ -152,7 +152,7 @@ git clone https://github.com/mattvenn/openlane_summary
 
 cd openlane_summary || exit 1
 
-git checkout mpw8
+git checkout mpw9
 
 echo 'export PATH=$PATH:$install_dir/openlane_summary/' >> $USER_HOME/.bashrc
 
@@ -163,4 +163,4 @@ echo "Almost done, lets free some space"
 rm $USER_HOME/Downloads/osscadsuite.tgz
 rm $USER_HOME/Downloads/riscv.tar.gz
 
-echo "${GREEN}Installation complete!, do not forget to install KLayout and test your installation${NC}\n\n"
+echo "${GREEN}Installation complete!, do not forget reboot your system, install KLayout and test your installation${NC}\n\n"
